@@ -36,7 +36,7 @@ Algorithm execution parameters were partially extracted from \[1\], the remainin
 Implementation of GuSTO
 ---------------------------
 
-Details of GuSTO implementation in MATLAB and the demonstration of the output results can be found in the html/main.html file.
+Details of GuSTO implementation in MATLAB and the demonstration of the output results can be found in the [html/main.html](https://github.com/nurkenkz/Gusto.m/blob/master/html/main.html) file.
 
 Analysis and Conclusions
 ----------------------------
@@ -55,6 +55,3 @@ References
 *   \[2\] J. Virgili-llop, C. Zagaris, R. Zappulla II, A. Bradstreet, and M. Romano, “Convex optimization for proximity maneuvering of a spacecraft with a robotic manipulator,” in AIAA/AAS Space Flight Mechanics Meeting, 2017.
 *   \[3\] Michael Grant and Stephen Boyd. CVX: Matlab software for disciplined convex programming, version 2.0 beta. [http://cvxr.com/cvx](http://cvxr.com/cvx), September 2013.
 *   \[4\] Michael Grant and Stephen Boyd. Graph implementations for nonsmooth convex programs, Recent Advances in Learning and Control (a tribute to M. Vidyasagar), V. Blondel, S. Boyd, and H. Kimura, editors, pages 95-110, Lecture Notes in Control and Information Sciences, Springer, 2008. [http://stanford.edu/~boyd/graph\_dcp.html](http://stanford.edu/~boyd/graph_dcp.html).
-
-  
-[Published with MATLAB® R2019a](https://www.mathworks.com/products/matlab/)
