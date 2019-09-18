@@ -1,0 +1,56 @@
+Skip to content
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@nurkenkz 
+46
+1,488313alexkaratarakis/gitattributes
+ Code Issues 0 Pull requests 0 Projects 0 Wiki Security Insights
+gitattributes/Matlab.gitattributes
+@Richienb Richienb Added Matlab diff
+b35995c on Mar 8
+@scottclowe@Richienb
+27 lines (23 sloc)  616 Bytes
+  
+# Basic .gitattributes for a MATLAB repo.
+# This template includes Simulink and MuPAD extensions, in addition
+# to the MATLAB extensions.
+
+# Source files
+# ============
+*.m             text diff=matlab
+*.mu            text diff=matlab
+
+# Caution: *.m also matches Mathematica packages.
+
+# Binary files
+# ============
+*.p             binary
+*.mex*          binary
+*.fig           binary
+*.mat           binary
+*.mdl           binary
+*.slx           binary
+*.mdlp          binary
+*.slxp          binary
+*.sldd          binary
+*.mltbx         binary
+*.mlappinstall  binary
+*.mlpkginstall  binary
+*.mn            binary
+© 2019 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
