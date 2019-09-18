@@ -1,0 +1,453 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Guaranteed Sequential Trajectory Optimization (GuSTO)</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-04-20"><meta name="DC.source" content="main.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Guaranteed Sequential Trajectory Optimization (GuSTO)</h1><!--introduction--><p>ECE 602 Winter 2019 Project</p><p>Nurken Tuktibayev (20764609)</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">1. Introduction</a></li><li><a href="#2">2. Problem Formulation</a></li><li><a href="#5">3. Proposed Solution</a></li><li><a href="#8">4. GuSTO Algorithm</a></li><li><a href="#11">5. Data Sources and Functions</a></li><li><a href="#18">6. Implementation of GuSTO</a></li><li><a href="#19">7. Output</a></li><li><a href="#21">8. Analysis and Conclusions</a></li><li><a href="#23">9. References</a></li></ul></div><h2 id="1">1. Introduction</h2><p>Bonalli et al. in their recent paper "GuSTO: Guaranteed sequential trajectory optimization via sequential convex programming" (2019) present an algorithm for solving trajectory optimization problems using Sequential Convex Programming (SCP). SCP is well known as an important tool in optimization, which plays a key role in robot motion planning. This project is an implementation of the proposed GuSTO algorithm in Matlab based on 3D Dubin's Car model dynamics, using CVX, a package for specifying and solving convex programs [3],[4].</p><h2 id="2">2. Problem Formulation</h2><p>For a given fixed initial point <img src="main_eq15385039735043462407.png" alt="${x_0}\in{R^n}$"> and a final goal set <img src="main_eq14328152136967907595.png" alt="${M_f}\subseteq{R^n}$"> for every final time <img src="main_eq12556606157233792916.png" alt="$t_f &gt; 0$">, the dynamics can be modeled as a drift control-affine system in <img src="main_eq13560274181536256371.png" alt="$R^n$"> of the form</p><p><img vspace="5" hspace="5" src="eImage1.PNG" alt=""> </p><p>where <img src="main_eq00590680390252039056.png" alt="$f_i:{R^n}\to{R^n}, i=0,...,m$"> are <img src="main_eq06269968709491478594.png" alt="$C^1$"> vector fields. Trajectory optimization can be designed as an Optimal Control Problem (OCP) with penalized state constraints consisting of minimizing the integral cost constraints.</p><p><img vspace="5" hspace="5" src="eImage2.PNG" alt=""> </p><p>under dynamics (1), among all the controls <img src="main_eq16598262816228680690.png" alt="${u}\in{L^\infty}([0,t_f],R^m)$"> satisfying <img src="main_eq04542198942566209643.png" alt="${u(t)}\in{U}$"> almost everywhere in <img src="main_eq13466811192897986295.png" alt="$[0,t_f]$">. Here, <img src="main_eq15238467810365407948.png" alt="${f^0}:{R^n}\to{R^n},{g}:{R^n}\to{R^n}$"> are <img src="main_eq06269968709491478594.png" alt="$C^1$">, <img src="main_eq09102013743257289857.png" alt="$\parallel\cdot\parallel_R$"> represents the norm that is given by a constant positive-definite matrix <img src="main_eq11035587743328782569.png" alt="${R}\in{R^{{m}\times{m}}}$">, and <img src="main_eq16987630830221338956.png" alt="${U}\subseteq{R^m}$"> provides control. Function <img src="main_eq02419679035215893711.png" alt="$g = g_1 + \omega{g_2}$"> sums up the contributions of original state-depending terms <img src="main_eq07231387707392003237.png" alt="$g_1$"> of the cost and of every state constraint violation <img src="main_eq06365613817285118266.png" alt="$g_2$"> (including collision-avoidance constraints), where <img src="main_eq05561703286244869120.png" alt="$\omega\geq1$"> is some penalization weight.</p><h2 id="5">3. Proposed Solution</h2><p>Assume that <img src="main_eq02619125812656254059.png" alt="$U$"> is convex and that for a given <img src="main_eq02183714845455771867.png" alt="$t_f^0 &gt; 0$"> there is some continuous curve <img src="main_eq00315019821361599997.png" alt="$x_0:[0, t_f^0]\to{R^n}$"> and some control <img src="main_eq09608361945266058543.png" alt="$u_0 : [0, t_f^0]\to{R^m}$">, continuously extended in the interval <img src="main_eq17985246632453900538.png" alt="$(0,+\infty)$">. Then Sequential Convex Programming (SCP) can be applied for our problem, which consists of iteratively linearizing the nonlinear contributions of OCP around local solutions, thus recursively defining a sequence of simplified problems, as authors propose in [1]. This provides the Linearized Optimal Control Problem <img src="main_eq09741512715528188095.png" alt="$(LOCP)_{k+1}$"> consisting of minimizing the new integral cost</p><p><img vspace="5" hspace="5" src="eImage3.PNG" alt=""> </p><p>coming from the linearization of nonlinear vector fields, among all controls <img src="main_eq16598262816228680690.png" alt="${u}\in{L^\infty}([0,t_f],R^m)$"> satisfying <img src="main_eq04542198942566209643.png" alt="${u(t)}\in{U}$"> almost everywhere in <img src="main_eq13466811192897986295.png" alt="$[0,t_f]$">, where <img src="main_eq18284203225510653089.png" alt="$(t_k^f,x_k,u_k)$"> is a solution for the linearized problem at the previous iteration, i.e. <img src="main_eq06445640507891902834.png" alt="$(LOCP)_k$">, continuously extended in the interval <img src="main_eq05468472705052318781.png" alt="$(0;\infty)$">. The authors claim in [1] that under these assumptions, at each iteration <img src="main_eq01187287385442986875.png" alt="$k\geq1$">, the problem <img src="main_eq06445640507891902834.png" alt="$(LOCP)_k$"> has at least one optimal solution. Once at some iteration <img src="main_eq09741512715528188095.png" alt="$(LOCP)_{k+1}$"> is solved, hard trust-region constraints can be checked and, if satisfied, the relative error between the original cost/dynamics and their linearized versions can be evaluated as the ratio</p><p><img vspace="5" hspace="5" src="eImage5.PNG" alt=""> </p><h2 id="8">4. GuSTO Algorithm</h2><p>A new general SCP scheme, named GuSTO (Guaranteed Sequential Trajectory Optimization), has been proposed in [1] to solve OCP:</p><p><img vspace="5" hspace="5" src="eImage4.PNG" alt=""> </p><p>The authors in [1] provide the proof of the convergence of GuSTO to a stationary point in the sense of the Pontryagin Maximum Principle.</p><h2 id="11">5. Data Sources and Functions</h2><p><b>Data Initialization.</b> Given initial and desired goal points and headings as [x,y,theta], the maximum number of iterations and initial time guess. 2 different methods for the initial trajectory can be selected: 1 for a straight line and 0 for a middle point between initial and desired goal points.</p><pre class="codeinput">clear <span class="string">all</span>
+clc
+N=41;
+init=[0;0;0];
+goal=[3;3;3];
+maxIterations=50;
+initTimeGuess=5;
+initTrajMethod=1;
+<span class="keyword">for</span> GlobalIndex=1:10
+</pre><p>Algorithm execution parameters were partially extracted from [1], the remaining values were obtained from experiments</p><pre class="codeinput">delta0=10000;
+delta=delta0;
+omega0=1;
+omegaM=1.0e10;
+omega=omega0;
+rho0=0.4;
+rho1=0.9;
+rhok=0;
+betaS=2;
+betaF=0.5;
+gammaF=5;
+epsilon=1.0e-6;
+convergence_threshold=0.1;
+ind=0;
+</pre><p><b>Robot Description.</b> A simple 3D Dubin's Car model has been selected for the simulation, providing opportunity to focus on the new GuSTO algorithm rather than on familiar, but heavy codes for more complex robot models. 3D model dynamics can be described as</p><p><img vspace="5" hspace="5" src="eImage6.PNG" alt=""> </p><p>where <img src="main_eq18047527249248817779.png" alt="$(x,y)$"> is the car's position, <img src="main_eq08288499342375314727.png" alt="$\theta$">  is the heading, the car is moving at a constant speed <img src="main_eq03158747792916826732.png" alt="$v$">, and the turn rate control <img src="main_eq11776305044305525613.png" alt="$u$"> is bounded. The function <i>DubinsCar()</i> creates an object of class <tt>DubinsCar</tt> with the subfunctions <i>fDynamic(), ADynamic(), BDynamic(), CostTrue(), InitializeModelParams(), UpdateModelParams(), DynamicConstraints()</i> and <i>ObstacleAvoidanceLinearized()</i> .</p><pre class="codeinput">model=DubinsCar();
+</pre><p><b>World Description.</b> The function <i>GenerateObstacles()</i> creates obstacles as circles between initial and desired goal points with random center and radius, not allowing any overlaps. In order to simulate algorithm with different parameters for the same initial data, generated matrix <tt>world</tt> can be saved and retrieved from the .mat file.</p><pre class="codeinput">world=GenerateObstacles(init,goal,GlobalIndex-1,0.5);
+save(<span class="string">'TheWorld.mat'</span>,<span class="string">'world'</span>);
+<span class="comment">%load('TheWorld.mat','world');</span>
+</pre><pre class="codeoutput">Warning: Area is too confined, can not fit all obstacles. Obstacle number
+changed to 7 
+</pre><p><b>Problem Description.</b> For the given robot and world descriptions, the task is to find the path that moves the robot gradually from the given start point and heading to the desired goal point and heading while never touching any obstacle with the minimum total control cost. We can define total integral cost as sum between control cost and all the penalties in order to get our original OCP as in (1)-(2). The function <i>GuSTOProblem()</i> creates an object of class <tt>GuSTOProblem</tt> with the subfunctions <i>InitialTrajectory(), ConvergenceMetric(), TrustRegionRatio(), ConvexIneqSatisfied()</i>. The function <i>GuSTOSolution</i> creates an object which contains all results of iteration <img src="main_eq12267211811494638899.png" alt="$k+1$"></p><pre class="codeinput">Problem=GuSTOProblem(init,goal,N,world);
+Solution=GuSTOSolution(Problem,model,initTrajMethod,initTimeGuess);
+</pre><p><b>Collision Avoidance.</b> The keep-out zone constraints are generally non-convex, which prevents from using them in a convex optimization. To circumvent the presence of these non-convex constraints, a sequential convex optimization approach is used [3]. In this project equations 12(a), 12(b) and 12(c) in [2] from [3] were implemented in the subfunction <i>ObstacleAvoidanceLinearized()</i> of <tt>DubinsCar</tt> class for calculating the signed distance between robot and obstacles.</p><h2 id="18">6. Implementation of GuSTO</h2><pre class="codeinput">[model.f, model.A, model.B]=InitializeModelParams(model,Problem, Solution.traj);
+Problem.obstacleTolerance=delta*0.8+model.clearance;
+<span class="keyword">while</span> ind&lt;maxIterations
+		[model.f model.A]=UpdateModelParams(model,Problem, Solution.traj);
+        cvx_begin <span class="string">quiet</span>
+        variables <span class="string">Tff</span> <span class="string">X(model.xDim,Problem.N)</span>
+        variable <span class="string">U(model.uDim,Problem.N-1)</span>
+        minimize (ObjectiveFunction(X,U,Solution.traj,Problem,model,omega,delta))
+        subject <span class="string">to</span>
+             <span class="keyword">for</span> i=1:model.xDim
+                 X(i,1)-Problem.init(i)==0;<span class="comment">%state init constraints</span>
+                 X(i,Problem.N)-Problem.goal(i)==0;<span class="comment">%state goal constraints</span>
+             <span class="keyword">end</span>
+             <span class="keyword">for</span> k=1:N-1
+                DynamicConstraints(model,Problem,X,U,Tff,Solution.traj,k,0)==0
+                U(1,k)-model.uMax(1)&lt;=0 <span class="comment">%control max bound constraints</span>
+                model.uMin(1)-U(1,k)&lt;=0 <span class="comment">%control min bound constraints</span>
+             <span class="keyword">end</span>
+             Tff&gt;=0.1
+		cvx_end
+        Solution.status=cvx_status;
+		<span class="keyword">if</span> strcmp(cvx_status,<span class="string">'Infeasible'</span>) || strcmp(cvx_status,<span class="string">'Failed'</span>)
+            warning(<span class="string">"GuSTO SCP iteration failed to find an optimal solution"</span>);
+            <span class="keyword">break</span>
+        <span class="keyword">end</span>
+        newTraj.X=X;
+        newTraj.U=U;
+        newTraj.Tff=Tff;
+        newTraj.dt=Tff/(size(X,2)-1);
+        convergence=ConvergenceMetric(Problem,newTraj,Solution.traj);
+        maxv=-Inf;
+        <span class="keyword">for</span> k=1:Problem.N
+            maxv=max(norm(newTraj.X(:,k)-Solution.traj.X(:,k))^2,maxv);
+        <span class="keyword">end</span>
+        <span class="keyword">if</span> maxv&lt;=delta
+            rhok=TrustRegionRatio(Problem,model,newTraj,Solution.traj);
+			<span class="keyword">if</span> rhok&gt;rho1
+                Solution.accepted=false;
+                delta=betaF*delta;
+            <span class="keyword">else</span>
+				Solution.accepted=true;
+                <span class="keyword">if</span> rhok&lt;rho0
+                   delta=min(betaS*delta,delta0);
+                <span class="keyword">end</span>
+ 				<span class="keyword">if</span> ConvexIneqSatisfied(Problem,model,newTraj,Solution.traj,epsilon)==false
+                    omega=gammaF*omega;
+                <span class="keyword">else</span>
+                    omega=omega0;
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+        <span class="keyword">else</span>
+ 			Solution.accepted=false;
+ 			omega=gammaF*omega;
+        <span class="keyword">end</span>
+ 		<span class="keyword">if</span> Solution.accepted
+			Solution.traj=newTraj;
+            plot(Solution.traj.X(1,:),Solution.traj.X(2,:),<span class="string">'--g'</span>,<span class="string">'HandleVisibility'</span>,<span class="string">'off'</span>)
+        hold <span class="string">on</span>
+        <span class="keyword">else</span>
+            plot(newTraj.X(1,:),newTraj.X(2,:),<span class="string">'--r'</span>,<span class="string">'HandleVisibility'</span>,<span class="string">'off'</span>)
+        <span class="keyword">end</span>
+        Problem.obstacleTolerance=delta/8+model.clearance;
+		ind=ind+1;
+        Solution.iterations=ind;
+		<span class="keyword">if</span> omega&gt;omegaM
+			warning(<span class="string">"Omega_max exceeded"</span>)
+			<span class="keyword">break</span>
+		<span class="keyword">end</span>
+		<span class="keyword">if</span> Solution.accepted==false
+           <span class="keyword">continue</span>
+        <span class="keyword">end</span>
+		<span class="keyword">if</span> convergence&lt;=convergence_threshold
+            <span class="keyword">if</span> ConvexIneqSatisfied(Problem,model,newTraj,Solution.traj,epsilon)
+                Solution.success=true;
+                <span class="keyword">if</span> Solution.success <span class="comment">%algorithm converged</span>
+                   <span class="comment">%disp('GuSTO converged')</span>
+                   <span class="keyword">break</span>
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+		<span class="keyword">end</span>
+    <span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="main_01.png" alt=""> <img vspace="5" hspace="5" src="main_03.png" alt=""> <img vspace="5" hspace="5" src="main_05.png" alt=""> <img vspace="5" hspace="5" src="main_07.png" alt=""> <img vspace="5" hspace="5" src="main_09.png" alt=""> <img vspace="5" hspace="5" src="main_11.png" alt=""> <img vspace="5" hspace="5" src="main_13.png" alt=""> <pre class="codeoutput">Warning: GuSTO SCP iteration failed to find an optimal solution 
+</pre><img vspace="5" hspace="5" src="main_15.png" alt=""> <img vspace="5" hspace="5" src="main_17.png" alt=""> <img vspace="5" hspace="5" src="main_19.png" alt=""> <h2 id="19">7. Output</h2><p>For demonstration purposes, each accepted solution is being plotted in dashed green line and every unaccepted in dashed red line. The function <i>Output()</i> visualizes initial and desired goal points, arrows showing theta direction, obstacles, final accepted trajectory (thick blue) and number of iterations in the title of the plot.</p><pre class="codeinput">Output(Solution,model,init,goal,world)
+</pre><img vspace="5" hspace="5" src="main_02.png" alt=""> <img vspace="5" hspace="5" src="main_04.png" alt=""> <img vspace="5" hspace="5" src="main_06.png" alt=""> <img vspace="5" hspace="5" src="main_08.png" alt=""> <img vspace="5" hspace="5" src="main_10.png" alt=""> <img vspace="5" hspace="5" src="main_12.png" alt=""> <img vspace="5" hspace="5" src="main_14.png" alt=""> <pre class="codeoutput">Warning: Ignoring extra legend entries. 
+</pre><img vspace="5" hspace="5" src="main_16.png" alt=""> <img vspace="5" hspace="5" src="main_18.png" alt=""> <img vspace="5" hspace="5" src="main_20.png" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><h2 id="21">8. Analysis and Conclusions</h2><p>In this project proposed GuSTO algorithm was implemented in Matlab and various simulations were accomplished utilizing Dubin's Car model dynamics. GuSTO easily manages avoiding obstacles on 2-dimensional space with relatively small number of iterations and there is no doubt it can be well utilized for more complex robot model dynamics. Linearization of non-convex constraints, such as collision avoidance, provides an advantages for GuSTO compared to other highly efficient techniques. The results demonstrate that this method allows to convexify non-convex constraints by linearized SCP and solve the problem using available convex optimization tools, such as CVX. The algorithm converges relatively fast, proving all of the theoretical conlcusion the authors made in [1].</p><p>The results of this project and the paper [1] can not be compared directly due to two main factors:</p><div><ul><li>The authors used several different robot model dynamics for the main results. Although they implemented the Shooting Method for accelerating convergence and simulated it on the same Dubin's Car model, it requires warm start feature, which is not available in CVX.</li><li>The authors implemented collision avoidance for GuSTO using Bullet Physics engine, which is not available for Matlab.</li></ul></div><h2 id="23">9. References</h2><div><ul><li>[1] R. Bonalli, A. Cauligi, A. Bylard, and M. Pavone, &#8220;GuSTO: Guaranteed sequential trajectory optimization via sequential convex programming&#8221; in 2019 IEEE International Conference on Robotics and Automation (ICRA), IEEE, may 2019</li><li>[2] J. Virgili-llop, C. Zagaris, R. Zappulla II, A. Bradstreet, and M. Romano, &#8220;Convex optimization for proximity maneuvering of a spacecraft with a robotic manipulator,&#8221; in AIAA/AAS Space Flight Mechanics Meeting, 2017.</li><li>[3] Michael Grant and Stephen Boyd. CVX: Matlab software for disciplined convex programming, version 2.0 beta. <a href="http://cvxr.com/cvx">http://cvxr.com/cvx</a>, September 2013.</li><li>[4] Michael Grant and Stephen Boyd. Graph implementations for nonsmooth convex programs, Recent Advances in Learning and Control (a tribute to M. Vidyasagar), V. Blondel, S. Boyd, and H. Kimura, editors, pages 95-110, Lecture Notes in Control and Information Sciences, Springer, 2008. <a href="http://stanford.edu/~boyd/graph_dcp.html">http://stanford.edu/~boyd/graph_dcp.html</a>.</li></ul></div><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Guaranteed Sequential Trajectory Optimization (GuSTO)
+% ECE 602 Winter 2019 Project
+%
+% Nurken Tuktibayev (20764609)
+%% 1. Introduction
+% Bonalli et al. in their recent paper "GuSTO: Guaranteed sequential trajectory optimization via sequential
+% convex programming" (2019) present an algorithm for solving trajectory
+% optimization problems using Sequential Convex Programming (SCP). SCP is well known as an important tool in optimization, which plays a key role
+% in robot motion planning. This project is an implementation of the proposed GuSTO
+% algorithm in Matlab based on 3D Dubin's Car model dynamics, using CVX, a package for specifying and solving
+% convex programs [3],[4].
+%% 2. Problem Formulation
+%
+% For a given fixed initial point ${x_0}\in{R^n}$ and a final goal set
+% ${M_f}\subseteq{R^n}$ for every final time $t_f > 0$, the dynamics can be modeled as a drift control-affine system in $R^n$ of the form
+%%
+% 
+% <<eImage1.PNG>>
+% 
+% where $f_i:{R^n}\to{R^n}, i=0,...,m$ are $C^1$ vector fields.
+% Trajectory optimization can be designed as an Optimal Control Problem
+% (OCP) with penalized state constraints consisting of minimizing the integral cost constraints.
+%%
+% 
+% <<eImage2.PNG>>
+% 
+% under dynamics (1), among all the controls ${u}\in{L^\infty}([0,t_f],R^m)$
+% satisfying ${u(t)}\in{U}$ almost everywhere in $[0,t_f]$.
+% Here, ${f^0}:{R^n}\to{R^n},{g}:{R^n}\to{R^n}$ are $C^1$, $\parallel\cdot\parallel_R$
+% represents the norm that is given by a constant positive-definite matrix
+% ${R}\in{R^{{m}\times{m}}}$, and ${U}\subseteq{R^m}$ provides control. Function $g = g_1 +
+% \omega{g_2}$ sums up the contributions of original state-depending terms $g_1$ of the cost 
+% and of every state constraint violation $g_2$ (including collision-avoidance constraints), 
+% where $\omega\geq1$ is some penalization weight.
+%% 3. Proposed Solution
+% Assume that $U$ is convex and that for a given $t_f^0 > 0$
+% there is some continuous curve $x_0:[0, t_f^0]\to{R^n}$ and some
+% control $u_0 : [0, t_f^0]\to{R^m}$, continuously extended in the
+% interval $(0,+\infty)$. Then Sequential Convex Programming (SCP) can be applied for our problem,
+% which consists of iteratively linearizing the nonlinear contributions of OCP around local solutions,
+% thus recursively defining a sequence of simplified problems, as authors
+% propose in [1]. This provides the Linearized Optimal Control Problem
+% $(LOCP)_{k+1}$ consisting of minimizing the new integral cost
+%%
+% 
+% <<eImage3.PNG>>
+% 
+% coming from the linearization of nonlinear vector fields,
+% among all controls ${u}\in{L^\infty}([0,t_f],R^m)$
+% satisfying ${u(t)}\in{U}$ almost everywhere in $[0,t_f]$, where
+% $(t_k^f,x_k,u_k)$ is a solution for the linearized problem at the previous iteration, i.e.
+% $(LOCP)_k$, continuously extended in the interval $(0;\infty)$.
+% The authors claim in [1] that under these assumptions, at each iteration
+% $k\geq1$, the problem $(LOCP)_k$ has at least one optimal solution.
+% Once at some iteration $(LOCP)_{k+1}$ is solved,
+% hard trust-region constraints can be checked and, if satisfied, the relative error between the original
+% cost/dynamics and their linearized versions can be evaluated as the ratio
+    %%
+    % 
+    % <<eImage5.PNG>>
+    % 
+%% 4. GuSTO Algorithm
+% A new general SCP scheme, named GuSTO (Guaranteed Sequential Trajectory Optimization), has been proposed in [1] to
+% solve OCP:
+%%
+% 
+% <<eImage4.PNG>>
+% 
+%% 
+% The authors in [1] provide the proof of the convergence of GuSTO to a stationary point in the sense
+% of the Pontryagin Maximum Principle.
+
+%% 5. Data Sources and Functions
+% *Data Initialization.* Given initial and desired goal points and headings as [x,y,theta],
+% the maximum number of iterations and initial time guess. 2 different methods for the initial trajectory can be selected:
+% 1 for a straight line and 0 for a middle point between initial and
+% desired goal points.
+clear all
+clc
+N=41;
+init=[0;0;0];
+goal=[3;3;3];
+maxIterations=50;
+initTimeGuess=5;
+initTrajMethod=1;
+for GlobalIndex=1:10
+%% 
+% Algorithm execution parameters were partially extracted from [1], the
+% remaining values were obtained from experiments
+delta0=10000;
+delta=delta0;
+omega0=1;
+omegaM=1.0e10;
+omega=omega0;
+rho0=0.4;
+rho1=0.9;
+rhok=0;
+betaS=2;
+betaF=0.5;
+gammaF=5;
+epsilon=1.0e-6;
+convergence_threshold=0.1;
+ind=0;
+%% 
+% *Robot Description.* A simple 3D Dubin's Car model has been selected for the simulation,
+% providing opportunity to focus on the new GuSTO algorithm rather than on familiar, but heavy codes for more complex robot
+% models. 3D model dynamics can be described as 
+%% 
+% <<eImage6.PNG>>
+% 
+% where $(x,y)$ is the car's position, $\theta$  is the heading, the car is moving at a constant speed $v$, and the turn rate control $u$ is bounded.
+% The function _DubinsCar()_ creates an object of class |DubinsCar| with the subfunctions _fDynamic(), 
+% ADynamic(), BDynamic(), CostTrue(), InitializeModelParams(), UpdateModelParams(), DynamicConstraints()_ and _ObstacleAvoidanceLinearized()_ . 
+model=DubinsCar();
+%%
+% *World Description.* The function _GenerateObstacles()_ creates obstacles as circles between
+% initial and desired goal points with random center and radius, not
+% allowing any overlaps. 
+% In order to simulate algorithm with different
+% parameters for the same initial data, generated matrix |world|
+% can be saved and retrieved from the .mat file.
+world=GenerateObstacles(init,goal,GlobalIndex-1,0.5);
+save('TheWorld.mat','world');
+%load('TheWorld.mat','world'); 
+%%
+% *Problem Description.* For the given robot and world descriptions, the task is to find the path
+% that moves the robot gradually from the given start point and heading to
+% the desired goal point and heading while never touching any obstacle with
+% the minimum total control cost.
+% We can define total integral cost as sum between control cost and all the
+% penalties in order to get our original OCP as in (1)-(2). The function _GuSTOProblem()_ creates an object of class |GuSTOProblem| with the
+% subfunctions _InitialTrajectory(), ConvergenceMetric(), TrustRegionRatio(), ConvexIneqSatisfied()_.
+% The function _GuSTOSolution_ creates an object which contains all results
+% of iteration $k+1$
+Problem=GuSTOProblem(init,goal,N,world);
+Solution=GuSTOSolution(Problem,model,initTrajMethod,initTimeGuess);
+%% 
+% *Collision Avoidance.*
+% The keep-out zone constraints are generally non-convex, which prevents from using them in a convex optimization.
+% To circumvent the presence of these non-convex constraints, a sequential convex optimization approach is used [3].
+% In this project equations 12(a), 12(b) and 12(c) in [2] from [3] were implemented
+% in the subfunction _ObstacleAvoidanceLinearized()_ of |DubinsCar| class for
+% calculating the signed distance between robot and obstacles. 
+%% 6. Implementation of GuSTO
+[model.f, model.A, model.B]=InitializeModelParams(model,Problem, Solution.traj);
+Problem.obstacleTolerance=delta*0.8+model.clearance;
+while ind<maxIterations
+		[model.f model.A]=UpdateModelParams(model,Problem, Solution.traj);
+        cvx_begin quiet
+        variables Tff X(model.xDim,Problem.N)
+        variable U(model.uDim,Problem.N-1)
+        minimize (ObjectiveFunction(X,U,Solution.traj,Problem,model,omega,delta))
+        subject to
+             for i=1:model.xDim
+                 X(i,1)-Problem.init(i)==0;%state init constraints
+                 X(i,Problem.N)-Problem.goal(i)==0;%state goal constraints
+             end
+             for k=1:N-1
+                DynamicConstraints(model,Problem,X,U,Tff,Solution.traj,k,0)==0
+                U(1,k)-model.uMax(1)<=0 %control max bound constraints
+                model.uMin(1)-U(1,k)<=0 %control min bound constraints
+             end
+             Tff>=0.1
+		cvx_end
+        Solution.status=cvx_status;
+		if strcmp(cvx_status,'Infeasible') || strcmp(cvx_status,'Failed')
+            warning("GuSTO SCP iteration failed to find an optimal solution");
+            break
+        end
+        newTraj.X=X;
+        newTraj.U=U;
+        newTraj.Tff=Tff;
+        newTraj.dt=Tff/(size(X,2)-1);
+        convergence=ConvergenceMetric(Problem,newTraj,Solution.traj);
+        maxv=-Inf;
+        for k=1:Problem.N
+            maxv=max(norm(newTraj.X(:,k)-Solution.traj.X(:,k))^2,maxv);
+        end
+        if maxv<=delta
+            rhok=TrustRegionRatio(Problem,model,newTraj,Solution.traj);
+			if rhok>rho1
+                Solution.accepted=false;
+                delta=betaF*delta;
+            else 
+				Solution.accepted=true;
+                if rhok<rho0 
+                   delta=min(betaS*delta,delta0);
+                end
+ 				if ConvexIneqSatisfied(Problem,model,newTraj,Solution.traj,epsilon)==false
+                    omega=gammaF*omega;
+                else
+                    omega=omega0;
+                end
+            end
+        else
+ 			Solution.accepted=false;
+ 			omega=gammaF*omega;
+        end
+ 		if Solution.accepted
+			Solution.traj=newTraj;
+            plot(Solution.traj.X(1,:),Solution.traj.X(2,:),'REPLACE_WITH_DASH_DASHg','HandleVisibility','off')
+        hold on    
+        else
+            plot(newTraj.X(1,:),newTraj.X(2,:),'REPLACE_WITH_DASH_DASHr','HandleVisibility','off')
+        end
+        Problem.obstacleTolerance=delta/8+model.clearance;
+		ind=ind+1;
+        Solution.iterations=ind;
+		if omega>omegaM
+			warning("Omega_max exceeded")
+			break
+		end
+		if Solution.accepted==false
+           continue
+        end
+		if convergence<=convergence_threshold
+            if ConvexIneqSatisfied(Problem,model,newTraj,Solution.traj,epsilon)
+                Solution.success=true;
+                if Solution.success %algorithm converged
+                   %disp('GuSTO converged')
+                   break 
+                end
+            end
+		end
+    end	
+%% 7. Output
+% For demonstration purposes, each accepted
+% solution is being plotted in dashed green line and every unaccepted in dashed
+% red line.
+% The function _Output()_ visualizes initial and desired goal points, arrows showing theta direction,
+% obstacles, final accepted trajectory (thick blue) and number of iterations in the title
+% of the plot.
+Output(Solution,model,init,goal,world)
+end
+%% 8. Analysis and Conclusions
+% In this project proposed GuSTO algorithm was implemented in Matlab and
+% various simulations were accomplished utilizing Dubin's Car model
+% dynamics. GuSTO easily manages avoiding obstacles on 2-dimensional space with
+% relatively small number of iterations and there is no doubt it can be
+% well utilized for more complex robot model dynamics. Linearization of
+% non-convex constraints, such as collision avoidance, provides an
+% advantages for GuSTO compared to other highly efficient techniques.
+% The results demonstrate that this method allows to convexify non-convex constraints by linearized
+% SCP and solve the problem using available convex optimization tools, such
+% as CVX. The algorithm converges relatively fast, proving all of the
+% theoretical conlcusion the authors made in [1].
+% 
+% The results of this project and the
+% paper [1] can not be compared directly due to two main factors:
+%% 
+% * The authors used several different robot model dynamics for the main
+% results. Although they implemented the Shooting Method for accelerating
+% convergence and simulated it on the same Dubin's Car model, it requires warm start feature, which is not available in
+% CVX. 
+% * The authors implemented collision avoidance for GuSTO using Bullet Physics engine, which is not available for Matlab.
+%% 9. References
+% * [1] R. Bonalli, A. Cauligi, A. Bylard, and M. Pavone, “GuSTO: Guaranteed sequential trajectory optimization via sequential convex programming” 
+% in 2019 IEEE International Conference on Robotics and
+% Automation (ICRA), IEEE, may 2019
+% * [2] J. Virgili-llop, C. Zagaris, R. Zappulla II, A. Bradstreet, and M.
+% Romano, “Convex optimization for proximity maneuvering of a spacecraft
+% with a robotic manipulator,” in AIAA/AAS Space Flight Mechanics Meeting, 2017.
+% * [3] Michael Grant and Stephen Boyd. CVX: Matlab software for disciplined convex programming, version 2.0 beta. http://cvxr.com/cvx, September 2013.
+% * [4] Michael Grant and Stephen Boyd. Graph implementations for nonsmooth convex programs, Recent Advances in Learning and Control (a tribute to M. Vidyasagar), 
+% V. Blondel, S. Boyd, and H. Kimura, editors, pages 95-110, Lecture Notes in Control and Information Sciences, Springer, 2008. http://stanford.edu/~boyd/graph_dcp.html.
+##### SOURCE END #####
+--></body></html>
